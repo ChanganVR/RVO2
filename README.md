@@ -1,11 +1,14 @@
 Optimal Reciprocal Collision Avoidance
 ======================================
 
+# Instructions for visualization
+mkdir build &cd build
+cmake .. & make
+./examples/Blocks > blocks.txt
+cd .. & visualize.py build/blocks.txt
+
+
 <http://gamma.cs.unc.edu/RVO2/>
-
-[![Build Status](https://travis-ci.org/snape/RVO2.svg?branch=master)](https://travis-ci.org/snape/RVO2)
-[![Build status](https://ci.appveyor.com/api/projects/status/0nyp7y4di8x1gh9o/branch/master?svg=true)](https://ci.appveyor.com/project/snape/rvo2)
-
 Copyright 2008 University of North Carolina at Chapel Hill
 
 Licensed under the Apache License, Version 2.0 (the "License");
