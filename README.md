@@ -1,13 +1,14 @@
 Optimal Reciprocal Collision Avoidance
 ======================================
 
-# Instructions for visualization
-mkdir build &cd build
-cmake .. & make
-./examples/Blocks > blocks.txt
-cd .. & visualize.py build/blocks.txt
+## Animation visualization
+mkdir build &cd build  
+cmake .. & make  
+cd .. & ./build/examples/Blocks > out.txt  
+python visualize.py out.txt
 
 
+## RVO2
 <http://gamma.cs.unc.edu/RVO2/>
 Copyright 2008 University of North Carolina at Chapel Hill
 

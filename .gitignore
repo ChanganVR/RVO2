@@ -16,3 +16,4 @@
 .idea/
 cmake-build-debug/
 build/
+*.txt

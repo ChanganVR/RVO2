@@ -22,7 +22,7 @@ def main():
     fig, ax = plt.subplots()
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    scat = ax.scatter([x[0] for x in steps[0]], [x[1] for x in steps[0]])
+    scat = ax.scatter([x[0] for x in steps[0]], [x[1] for x in steps[0]], s=1)
 
     def update(frame_num):
         scat.set_offsets(steps[frame_num])

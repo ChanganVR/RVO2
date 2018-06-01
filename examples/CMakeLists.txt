@@ -44,4 +44,8 @@ add_executable(Roadmap Roadmap.cpp)
 target_link_libraries(Roadmap RVO)
 add_test(Roadmap Roadmap)
 
-install(TARGETS Blocks Circle Roadmap DESTINATION bin)
+add_executable(TwoAgents TwoAgents.cpp)
+target_link_libraries(TwoAgents RVO)
+add_test(TwoAgents TwoAgents)
+
+install(TARGETS Blocks Circle Roadmap TwoAgents DESTINATION bin)
