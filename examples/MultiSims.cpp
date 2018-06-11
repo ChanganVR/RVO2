@@ -47,6 +47,10 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <sys/stat.h>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 #include <vector>
 
@@ -68,49 +72,63 @@
 const float M_PI = 3.14159265358979323846f;
 #endif
 
+using namespace std;
+
 /* Store the goals of the agents. */
 std::vector<RVO::Vector2> goals;
 
-void setupScenario(RVO::RVOSimulator *sim)
+void setupScenario(RVO::RVOSimulator *sim, ofstream& output_file)
 {
 #if RVO_SEED_RANDOM_NUMBER_GENERATOR
     std::srand(static_cast<unsigned int>(std::time(NULL)));
 #endif
 
+    float radius = 5.0f;
+    float max_speed = 2.0f;
+
     /* Specify the global time step of the simulation. */
-    sim->setTimeStep(0.25f);
+    sim->setTimeStep(1.0f);
 
     /* Specify the default parameters for agents that are subsequently added. */
     /* neighborDist, maxNeighbors, timeHorizon, timeHorizonObst, radius, maxSpeed, &velocity*/
-    sim->setAgentDefaults(15.0f, 10, 5.0f, 5.0f, 2.0f, 2.0f);
+    sim->setAgentDefaults(15.0f, 10, 5.0f, radius, max_speed, 2.0f);
 
-    /*
-     * Add agents, specifying their start position, and store their goals on the
-     * opposite side of the environment.
-     */
-    sim->addAgent(RVO::Vector2(55.0f,  55.0f));
-    goals.push_back(RVO::Vector2(-75.0f, -75.0f));
+    float angle1, angle2;
+    RVO::Vector2 p1, p2, g1, g2;
+    do {
+        angle1 = float(rand()) / RAND_MAX * 2 * M_PI;
+        angle2 = float(rand()) / RAND_MAX * 2 * M_PI;
 
-    sim->addAgent(RVO::Vector2(-55.0f,  55.0f));
-    goals.push_back(RVO::Vector2(75.0f, -75.0f));
+        p1 = RVO::Vector2(50+cos(angle1)*40, 50+sin(angle1)*40);
+        p2 = RVO::Vector2(50+cos(angle2)*40, 50+sin(angle2)*40);
+        g1 = RVO::Vector2(50-cos(angle1)*40, 50-sin(angle1)*40);
+        g2 = RVO::Vector2(50-cos(angle2)*40, 50-sin(angle2)*40);
+
+    } while (sin((angle1 - angle2)/2) < radius / 40);
+
+
+    sim->addAgent(p1);
+    goals.push_back(g1);
+    sim->addAgent(p2);
+    goals.push_back(g2);
 
     // print goal position, radius and preferred speed
-    std::cout << -75.0f << " " << -75.0f << " " << 2.0f<< " "  << 2.0f << std::endl;
-    std::cout << 75.0f << " " << -75.0f << " " << 2.0f << " " << 2.0f << std::endl;
+    output_file << g1.x() << " " << g1.y() << " " << radius << " " << max_speed << std::endl;
+    output_file << g2.x() << " " << g2.y() << " " << radius << " " << max_speed << std::endl;
 }
 
 #if RVO_OUTPUT_TIME_AND_POSITIONS
-void updateVisualization(RVO::RVOSimulator *sim)
+void updateVisualization(RVO::RVOSimulator *sim, ofstream& output_file)
 {
     /* Output the current global time. */
-    std::cout << sim->getGlobalTime();
+    output_file << sim->getGlobalTime();
 
     /* Output the current position of all the agents. */
     for (size_t i = 0; i < sim->getNumAgents(); ++i) {
-        std::cout << " " << sim->getAgentPosition(i);
+        output_file << " " << sim->getAgentPosition(i);
     }
 
-    std::cout << std::endl;
+    output_file << std::endl;
 }
 #endif
 
@@ -155,18 +173,19 @@ bool reachedGoal(RVO::RVOSimulator *sim)
     return true;
 }
 
-int main()
+
+int run_simulation_once(ofstream& output_file)
 {
     /* Create a new simulator instance. */
     RVO::RVOSimulator *sim = new RVO::RVOSimulator();
 
     /* Set up the scenario. */
-    setupScenario(sim);
+    setupScenario(sim, output_file);
 
     /* Perform (and manipulate) the simulation. */
     do {
 #if RVO_OUTPUT_TIME_AND_POSITIONS
-        updateVisualization(sim);
+        updateVisualization(sim, output_file);
 #endif
         setPreferredVelocities(sim);
         sim->doStep();
@@ -176,4 +195,19 @@ int main()
     delete sim;
 
     return 0;
+}
+
+
+int main()
+{
+    mkdir("multi_sim", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    for (int i=0; i < 500; i++) {
+        ofstream output_file;
+        ostringstream file_name;
+        file_name << "multi_sim/" << i << ".txt";
+        cout << "Writing to " << file_name.str() << endl;
+        output_file.open(file_name.str().c_str());
+        run_simulation_once(output_file);
+        output_file.close();
+    }
 }

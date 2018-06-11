@@ -48,4 +48,8 @@ add_executable(TwoAgents TwoAgents.cpp)
 target_link_libraries(TwoAgents RVO)
 add_test(TwoAgents TwoAgents)
 
-install(TARGETS Blocks Circle Roadmap TwoAgents DESTINATION bin)
+add_executable(MultiSims MultiSims.cpp)
+target_link_libraries(MultiSims RVO)
+add_test(MultiSims MultiSims)
+
+install(TARGETS Blocks Circle Roadmap TwoAgents MultiSims DESTINATION bin)

@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
 import sys
 import re
+import os
 
 
 def main():
-    output_file = sys.argv[1]
-    with open(output_file) as fo:
-        lines = fo.readlines()
+    trajectory_file = sys.argv[1]
+    with open(trajectory_file) as fo:
+        lines = fo.readlines()[2:]
         steps = list()
         for line in lines:
             line = line.split()
@@ -27,8 +28,12 @@ def main():
     def update(frame_num):
         scat.set_offsets(steps[frame_num])
 
-    animation = FuncAnimation(fig, update, frames=len(steps), interval=1)
-    plt.show()
+    anim= animation.FuncAnimation(fig, update, frames=len(steps), interval=1)
+    Writer = animation.writers['ffmpeg']
+    writer = Writer(fps=60, metadata=dict(artist='Me'), bitrate=1800)
+    output_file = os.path.basename(trajectory_file).replace('txt', 'mp4')
+    anim.save(output_file, writer=writer)
+    # plt.show()
 
 
 if __name__ == '__main__':
