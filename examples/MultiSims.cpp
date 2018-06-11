@@ -77,12 +77,9 @@ using namespace std;
 /* Store the goals of the agents. */
 std::vector<RVO::Vector2> goals;
 
+
 void setupScenario(RVO::RVOSimulator *sim, ofstream& output_file)
 {
-#if RVO_SEED_RANDOM_NUMBER_GENERATOR
-    std::srand(static_cast<unsigned int>(std::time(NULL)));
-#endif
-
     float radius = 5.0f;
     float max_speed = 2.0f;
 
@@ -100,8 +97,8 @@ void setupScenario(RVO::RVOSimulator *sim, ofstream& output_file)
         angle2 = float(rand()) / RAND_MAX * 2 * M_PI;
 
         p1 = RVO::Vector2(50+cos(angle1)*40, 50+sin(angle1)*40);
-        p2 = RVO::Vector2(50+cos(angle2)*40, 50+sin(angle2)*40);
         g1 = RVO::Vector2(50-cos(angle1)*40, 50-sin(angle1)*40);
+        p2 = RVO::Vector2(50+cos(angle2)*40, 50+sin(angle2)*40);
         g2 = RVO::Vector2(50-cos(angle2)*40, 50-sin(angle2)*40);
 
     } while (sin((angle1 - angle2)/2) < radius / 40);
@@ -178,6 +175,7 @@ int run_simulation_once(ofstream& output_file)
 {
     /* Create a new simulator instance. */
     RVO::RVOSimulator *sim = new RVO::RVOSimulator();
+    goals.clear();
 
     /* Set up the scenario. */
     setupScenario(sim, output_file);
@@ -200,6 +198,9 @@ int run_simulation_once(ofstream& output_file)
 
 int main()
 {
+#if RVO_SEED_RANDOM_NUMBER_GENERATOR
+    std::srand(static_cast<unsigned int>(std::time(NULL)));
+#endif
     mkdir("multi_sim", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     for (int i=0; i < 500; i++) {
         ofstream output_file;
