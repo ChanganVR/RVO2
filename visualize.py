@@ -26,15 +26,15 @@ def main():
     # ymin = min([x[1] for step in steps for x in step])
 
     fig, ax = plt.subplots()
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
+    ax.set_xlim(-3, 3)
+    ax.set_ylim(-3, 3)
     scat = ax.scatter([x[0] for x in steps[0]], [x[1] for x in steps[0]])
-    ax.add_artist(plt.Circle((50, 50), 40, fill=False, edgecolor='g', lw=1))
+    ax.add_artist(plt.Circle((0, 0), 2, fill=False, edgecolor='g', lw=1))
 
     def update(frame_num):
         scat.set_offsets(steps[frame_num])
 
-    anim= animation.FuncAnimation(fig, update, frames=len(steps), interval=1)
+    anim = animation.FuncAnimation(fig, update, frames=len(steps), interval=800)
     if args.video:
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=60, metadata=dict(artist='Me'), bitrate=1800)

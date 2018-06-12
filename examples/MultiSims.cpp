@@ -80,15 +80,15 @@ std::vector<RVO::Vector2> goals;
 
 void setupScenario(RVO::RVOSimulator *sim, ofstream& output_file)
 {
-    float radius = 5.0f;
-    float max_speed = 2.0f;
+    float radius = 0.3f;
+    float max_speed = 1.0f;
 
     /* Specify the global time step of the simulation. */
     sim->setTimeStep(1.0f);
 
     /* Specify the default parameters for agents that are subsequently added. */
     /* neighborDist, maxNeighbors, timeHorizon, timeHorizonObst, radius, maxSpeed, &velocity*/
-    sim->setAgentDefaults(15.0f, 10, 5.0f, radius, max_speed, 2.0f);
+    sim->setAgentDefaults(15.0f, 10, 5.0f, 5.0f, radius, max_speed);
 
     float angle1, angle2;
     RVO::Vector2 p1, p2, g1, g2;
@@ -96,12 +96,12 @@ void setupScenario(RVO::RVOSimulator *sim, ofstream& output_file)
         angle1 = float(rand()) / RAND_MAX * 2 * M_PI;
         angle2 = float(rand()) / RAND_MAX * 2 * M_PI;
 
-        p1 = RVO::Vector2(50+cos(angle1)*40, 50+sin(angle1)*40);
-        g1 = RVO::Vector2(50-cos(angle1)*40, 50-sin(angle1)*40);
-        p2 = RVO::Vector2(50+cos(angle2)*40, 50+sin(angle2)*40);
-        g2 = RVO::Vector2(50-cos(angle2)*40, 50-sin(angle2)*40);
+        p1 = RVO::Vector2(+cos(angle1)*2, +sin(angle1)*2);
+        g1 = RVO::Vector2(-cos(angle1)*2, -sin(angle1)*2);
+        p2 = RVO::Vector2(+cos(angle2)*2, +sin(angle2)*2);
+        g2 = RVO::Vector2(-cos(angle2)*2, -sin(angle2)*2);
 
-    } while (sin((angle1 - angle2)/2) < radius / 40);
+    } while (RVO::absSq(p1 - p2) < 0.2);
 
 
     sim->addAgent(p1);
@@ -162,9 +162,15 @@ bool reachedGoal(RVO::RVOSimulator *sim)
 {
     /* Check if all agents have reached their goals. */
     for (size_t i = 0; i < sim->getNumAgents(); ++i) {
-        if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > 1.0f * 1.0f) {
+        if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > sim->getAgentRadius(i)*sim->getAgentRadius(i)) {
+//            if (i ==0)
+//                cout << RVO::absSq(sim->getAgentPosition(i) - goals[i]) << " " << sim->getAgentRadius(i)*sim->getAgentRadius(i) << endl;
             return false;
         }
+//        else
+//            if (i==0)
+//                cout << sim->getAgentPosition(i) << " " << goals[i] << endl;
+//                cout << RVO::absSq(sim->getAgentPosition(i) - goals[i]) << " " << sim->getAgentRadius(i)*sim->getAgentRadius(i) << endl;
     }
 
     return true;
@@ -189,6 +195,9 @@ int run_simulation_once(ofstream& output_file)
         sim->doStep();
     }
     while (!reachedGoal(sim));
+#if RVO_OUTPUT_TIME_AND_POSITIONS
+    updateVisualization(sim, output_file);
+#endif
 
     delete sim;
 
