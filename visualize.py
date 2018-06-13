@@ -25,7 +25,7 @@ def main():
     # ymax = max([x[1] for step in steps for x in step])
     # ymin = min([x[1] for step in steps for x in step])
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(7, 7))
     ax.set_xlim(-3, 3)
     ax.set_ylim(-3, 3)
     scat = ax.scatter([x[0] for x in steps[0]], [x[1] for x in steps[0]])

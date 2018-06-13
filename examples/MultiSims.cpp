@@ -211,7 +211,7 @@ int main()
     std::srand(static_cast<unsigned int>(std::time(NULL)));
 #endif
     mkdir("multi_sim", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    for (int i=0; i < 500; i++) {
+    for (int i=0; i < 1500; i++) {
         ofstream output_file;
         ostringstream file_name;
         file_name << "multi_sim/" << i << ".txt";
